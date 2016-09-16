@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Check-out from {{ order.table.restaurant.name }} {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        <h2>Checkout</h2>
+        <p>You are about to pay and checkout. Your bill is <b>{{ order.total_confirmed }} {{ order.currency }}</b>. Please select the mode of payment. After paying you won't be able to order anymore, unless you check-in with a waiter again.</p>
+            {% for m in payment_methods %}
+                <a class="btn btn-primary" href="{% url 'customer:pay' order.id m.id %}">{{ m.name }}</a><br>
+            {% endfor %}
+        {# XXX what if there are no payment methods ? #}
+    </div> 
+</div>
+
+
+{% endblock %}

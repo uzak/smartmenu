@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %} My Profile {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        <h1>My Profile</h1>
+        <form method="POST">
+            {% csrf_token %}
+            Are you really sure to delete your profile?
+            <button class="btn btn-danger" name="_delete">Yes</button>
+        </form>
+        <a class="btn btn-primary" href="{% url 'main:profile' %}">No, return to my profile</a>
+    </div>
+</div>
+
+{% endblock %}

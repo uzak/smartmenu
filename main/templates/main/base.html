@@ -1,0 +1,16 @@
+{% extends 'bootstrap3/bootstrap3.html' %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+
+{% block bootstrap3_title %}
+    {% block title %}SmartMenu{% endblock %}
+{% endblock %}
+
+{% block bootstrap3_content %}
+	
+	{% include 'main/header.html' %}
+    {% block content %}
+    {% endblock %}
+    {% include 'main/footer.html' %}
+
+{% endblock %}

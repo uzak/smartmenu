@@ -1,0 +1,23 @@
+{% extends 'main/header.html' %}
+
+{% block home_link %}
+<a href="{% url 'customer:index' %}"><span class="glyphicon glyphicon-home" aria-hidden="true"/></a>
+
+{% if restaurant %}
+<ol class="breadcrumb" style="display: inline;">
+    <li><a href="{% url 'manager:for_restaurant' restaurant.id %}">{{restaurant.name}}</a></li>
+    <li><a href="{% url 'manager:manage_menu' restaurant.menu.id %}">Menu</a></li>
+
+    {% if cat18n %}
+    <li><a href="{% url 'manager:manage_category' cat18n.category.id %}">{{cat18n.name}}</a></li>
+
+        {% if item18n %}
+        <li><a href="{% url 'manager:manage_item' item18n.item.id %}">{{item18n.item.no}}</a></li>
+        {% endif %}
+
+    {% endif%}
+</ol>
+{% endif%}
+
+
+{% endblock %}

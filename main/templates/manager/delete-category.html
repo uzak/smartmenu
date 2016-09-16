@@ -1,0 +1,16 @@
+{% extends 'manager/base.html' %}
+
+
+{% block title %}SmartMenu / Manager / Delete Category {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Delete category: {{ cat18n.name }}</h1>
+
+    This will delete the category "{{ cat18n.name }}" and all its items in all languages! This cannot be undone! Are you sure to proceed?
+    <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-danger" name="_delete">delete</button>
+    </form>
+</div>
+{% endblock %}

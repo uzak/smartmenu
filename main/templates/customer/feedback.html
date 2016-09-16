@@ -1,0 +1,44 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Feedback</h1>
+    <div class="col-sm-8 col-sm-offset-2">
+        Your order at {{ order.table.restaurant.name }}, date of checkout: {{ order.checkout }}
+
+        <table border=1>
+            <tr>
+                <th>Item</th>
+                <th>Rating</th>
+                <th>Feedback</th>
+                <th></th>
+            </tr>
+            {% for oi in orderitems %}
+    <form action="{% url 'customer:feedback' order.id %}" method="POST">
+        {% csrf_token %}
+                <tr>
+                    <input name="id" type="hidden" value="{{ oi.id }}">
+                    <td><div><b>{{ oi.name }}</b></div>
+                        <img width="150" height="150" src="{{ oi.item.image.url }}">
+                    </td>
+                    <td><input name="rating" value="{{ oi.review.rating }}" placeholder="Rating: 1-5" {{ oi.review|yesno:"disabled,,"}}></td>
+                    <td>
+                        <textarea name="text" placeholder="Feedback ..." {{ oi.review|yesno:"disabled,,"}}>{{ oi.review.text }}</textarea>
+                    </td>
+                    <td>
+                        {% if oi.review %}
+                            Feedback provided on {{ oi.review.date }}.
+                        {% else %}
+                            <button href="#" class="btn btn-primary">Submit feedback</button>
+                        {% endif %}
+                    </td>
+                </tr>
+        </form>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

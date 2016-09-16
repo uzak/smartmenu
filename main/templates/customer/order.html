@@ -1,0 +1,97 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Order{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <h3>Invoice</h3>
+
+    {% if not confirmed and unconfirmed %}
+    <p>Your invoice is empty. Please confirm the items from the list below.
+    </p>
+    {% endif %}
+
+    {% if not confirmed and not unconfirmed %}
+    Your invoice is empty and you have not selected any items from the <a
+        href="{% url 'customer:menu' restaurant.id %}">menu</a> yet. Please:
+    <ul>
+        <li>go to the menu and order some items</li>
+        <li>or click <a href="{% url 'customer:checkout' order.id %}">checkout</a> to close your invoice and check out.</li>
+    </ul>
+    {% endif %}
+
+    <table border="0" class="table">
+        {% for oi, i18n in confirmed %}
+        <tr>
+            <td style="text-right">{{oi.amount}} x</td>
+            <td>{{i18n.name}}</td>
+            <td style="text-right">à</td>
+            <td>{{oi.item.price}} {{order.currency}}</td>
+            <td>{{oi.comment}}</td>
+        </tr>
+        {% endfor %}
+        {% if confirmed %}
+        <tr>
+            <td></td>
+            <td colspan="2">Total:</td>
+            <td colspan="3"><b>{{order.total_confirmed}} {{order.currency}}</b></td>
+        </tr>
+        {% endif %}
+    </table>
+
+
+    {% if unconfirmed %}
+    <h3>Items to be confirmed</h3>
+
+    <table id="cart" class="table table-hover table-condensed" border="0">
+        <thead>
+        <tr>
+            <th>Quantity</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+            <th>Comment</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for oi, i18n in unconfirmed %}
+        <form action="{% url 'customer:confirm_orderitem' oi.instance.id %}" method="POST">
+            {%csrf_token%}
+            <tr>
+                <td>
+                    {{oi.amount}}
+                </td>
+                <td>
+                    {{ i18n.name}}
+                </td>
+                <td>{{ oi.instance.item.price }} {{ order.currency }}</td>
+                <td>{{ oi.instance.subtotal }} {{ order.currency }}</td>
+                <td>{{oi.comment}}</td>
+                <td>
+                    <button class="btn btn-primary">confirm</button>
+                    <a href="{% url 'customer:remove_orderitem' oi.instance.id %}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+                </td>
+            </tr>
+        </form>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <p><a href="{% url 'customer:menu' restaurant.id %}" class="btn btn-primary">Continue Ordering</a></p>
+    <p><a href="{% url 'customer:checkout' order.id %}" class="btn btn-success">
+        {% if confirmed %}
+        Pay & Checkout
+        {% else %}
+        Checkout
+        {% endif %}
+    </a>
+    </p>
+
+</div>
+
+
+{% endblock %}
+

@@ -1,0 +1,119 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+{% load smartmenu_tags %}
+
+{% block title %} My Profile {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        <h1>My Profile</h1>
+
+        {{ form.errors }}
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a>
+            </li>
+            <li role="presentation">
+                <a href="#allergens" aria-controls="allergens" role="tab" data-toggle="tab">Allergens</a>
+            </li>
+            <li role="presentation">
+                <a href="#history" aria-controls="history" role="tab" data-toggle="tab">History of Orders</a>
+            </li>
+        </ul>
+
+        <form method="POST" action="{% url 'main:profile' %}">
+            {% csrf_token %}
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="general">
+                    Name: {{ user.first_name }} {{ user.last_name }} <br>
+                    Username: {{ user.username }}<br>
+                    Email: {{ user.email }}<br>
+
+                    <a class="btn btn-danger" href="{% url 'main:profile_delete' %}">Delete account</a>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="allergens">
+                    Please select all allergens you are allergic to:<p>
+                    {{ form.allergens }}
+
+                    <button name="_allergens" class="btn btn-primary">Save</button>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="history">
+                    <table border="1">
+                        <tr>
+                            <th>Date</th>
+                            <th>Restaurant</th>
+
+                            <th>Amount</th>
+                            <th>View / Feedback</th>
+
+                        </tr>
+                        {% for order in orders %}
+                        <tr>
+                            <td>
+                                {{ order.checkin|date:"Y-m-d" }}
+                            </td>
+                            <td>
+                                {{ order.table.restaurant.name }}
+                            </td>
+                            <td>
+                                {{ order.total }}
+                                {{ order.currency }}
+                            </td>
+                            <td>
+                                <a href="{% url 'customer:feedback' order.id %}">View / Feedback</a>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if goto_allergens %}
+    <script>
+        $(document).ready(function() {
+            $('.nav-tabs a[href="#allergens"]').tab('show');
+        });
+    </script>
+{% endif %}
+
+<script>
+    // save the preferred order of languages
+    var el = document.getElementById("id_languages");
+    var sortable = new Sortable(el, {
+        dataIdAttr: "data-id",
+        store: {
+              get: function(sortable) {
+                   var order = "{{ profile.menu_language_order }}";
+                   return order.split("|");
+              },
+              set: function (sortable) {
+                  var order = sortable.toArray();
+                  $.ajax({
+                      method: "POST",
+                      url: "{% url 'main:set_menu_language_order' %}",
+                      data: {
+                          menu_language_order: order.join("|"),
+                          csrfmiddlewaretoken: '{{ csrf_token }}',
+                      }
+                  });
+                }
+            },
+        });
+
+</script>
+{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    <script src="{% static 'js/Sortable.js' %}"></script>
+{% endblock %}

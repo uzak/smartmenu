@@ -1,0 +1,125 @@
+{% extends 'manager/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}SmartMenu / Manage Menu {% endblock %}
+
+{% block content %}
+<div class="container manage-menu">
+    <h1>Menu</h1>
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Changing a menu's default language is not supported yet. But you might add a new Translation,
+        see "Translation" section below.-->
+        {{ form.as_p }}
+        <button class="btn btn-primary">Save</button>
+
+        {% if menu %}
+            <h3>Categories</h3>
+            {% if categories %}
+
+            Use drag and drop to change the order of categories. To manage a category (incl, renaming and deleting) click the link.
+
+            <ul id="id_categories">
+            {% for cat in categories %}
+                <li data-id="{{cat.category.id}}">
+                    <a href="{% url 'manager:manage_category' cat.category.id %}">{{ cat.name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+
+            <a class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm" href="#">Add new category</a>
+
+            <h3>Translations</h3>
+
+            <ul>
+                {% for tr in menu.translations.all %}
+                    <li>{{ tr }} <a href="{% url 'manager:delete_translation' menu.id tr.id %}">remove</a></li>
+                {% endfor %}
+            </ul>
+
+            <a href="#" data-target=".bs-example-modal-sm2" data-toggle="modal" class="btn btn-primary">Add new translation</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog" role="document">
+        <form action="{% url 'manager:add_category' menu.id %}" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add new category</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Add a new category to your menu. E.g.: soups, main dishes, appetisers, etc.</p>
+                    <p>View determines how the items of a category will be displayed in the menu.</p>
+                    {{ add_cat_form }}
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" data-dismiss="modal">Close</a>
+                    <button class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-sm2" tabindex="-1" role="dialog" aria-labelledby="languageModal">
+    <div class="modal-dialog" role="document">
+        <form action="{% url 'manager:add_translation' menu.id %}" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="languageModalLabel">Add new translation</h4>
+                </div>
+                <div class="modal-body">
+                    <p>After adding a translation you will be able to translate your menu into that language.</p>
+                    {{ add_translation_form }}
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" data-dismiss="modal">Close</a>
+                    <button class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // disable language
+    $('#id_language').prop('disabled', true);
+
+    // drag and drop categories
+    var el = document.getElementById("id_categories");
+    var sortable = new Sortable(el, {
+        dataIdAttr: "data-id",
+        store: {
+              get: function(sortable) {
+                   var order = "{{ ordering }}";
+              },
+              set: function (sortable) {
+                  var order = sortable.toArray();
+                  $.ajax({
+                      method: "POST",
+                      url: "{% url 'manager:set_category_ordering' menu.id %}",
+                      data: {
+                          category_ordering: order.join("|"),
+                          csrfmiddlewaretoken: '{{ csrf_token }}',
+                      }
+                  });
+                }
+            },
+        });
+</script>
+{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    <script src="{% static 'js/Sortable.js' %}"></script>
+{% endblock %}

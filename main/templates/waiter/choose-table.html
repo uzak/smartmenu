@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Waiter {% endblock %}                    
+
+{% block content %}
+<div class="container">
+    <h1>Choose table for customer </h1>
+    {% for table in tables %}
+        <a href="{% url 'waiter:checkin_customer' table.id user_id %}">{{ table }} {{ table.occuppied|yesno:"occupied,free," }}</a><br>
+    {% endfor %}
+</div>
+
+{% endblock %}

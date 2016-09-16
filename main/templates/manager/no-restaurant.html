@@ -1,0 +1,18 @@
+{% extends 'manager/base.html' %}
+
+{% block title %}SmartMenu{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome {{request.user}}</h1>
+
+    <p>You are in the administration interface of SmartMenu. You have no restaurant's to manage, so you can create a new one here.</p>
+
+    <a href="{% url 'manager:create_restaurant' %}" class="btn btn-primary">Create restaurant</a>
+
+    <p>Alternatively, you can use SmartMenu as a customer:</p>
+
+    <a href="{% url 'customer:index' %}" class="btn btn-primary">Leave administration interface</a>
+
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}SmartMenu{% endblock %}                    
+
+{% block content %}
+<div class="container">
+    <div class="text-center row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <h1>SmartMenu</h1>
+            <p class="logo-lead">Bringing the restaurant to your smartphone</p>
+                <form class="searchform">
+                    <div class="form-group">
+                        <input autocomplete="off" id="searchinput" name="q" type="search" class="form-control" placeholder="Please enter the restaurant's name" />
+                    </div>
+                    <div id="searchlist" class="list-group"></div>
+                </form>
+        </div>
+    </div>
+
+    {% if manager_at %}
+    <div class="text-center row">
+        You are manager at:
+        {% for m in manager_at %}
+            <a href="{% url 'manager:for_restaurant' m.restaurant.id %}">{{ m.restaurant.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if waiter_at %}
+    <div class="text-center row">
+        You are waiter at:
+        {% for w in waiter_at %}
+            <a href="{% url 'waiter:for_restaurant' w.restaurant.id %}">{{ w.restaurant.name }}</a>{% if not forloop.last %}, {% endif %}
+            {# XXX add template tag for: forloop.last -> , #}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+
+
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    <script src="{% static 'js/bootstrap-list-filter.src.js' %}"></script>
+
+    <script>
+    $('#searchlist').btsListFilter('#searchinput', {
+        {# XXX any way to use django's url in conjuction with jquery's templating below? #}
+        sourceTmpl: '<a class="list-group-item" href="restaurant/{id}/menu"><span><b>{name}</b>, <i>{street} {street_no}, {city}</i></span></a>',
+        resetOnBlur: false,
+        cancelNode: false, //XXX add cancel node that works
+        sourceData: function(text, callback) {
+            return $.getJSON('{% url 'customer:restaurant_search' %}?q='+text, function(json) {
+                callback(json);
+            });
+        }
+    });
+ 
+    </script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'main/base.html' %}
+
+{% load i18n %}
+
+{% block title %}Menu for {{ restaurant.name }} {% endblock %}
+
+{% block content %}
+
+<script>
+$(document).ready(function() {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+});
+
+function imgError(image) {
+    image.onerror = "";
+    image.style.width = "300px";
+    image.style.height = "300px";
+    return true;
+}
+</script>
+
+    <div class="container" id="menu">
+        <!-- restaurant info -->
+        <div class="row">
+            <div class="info">
+                <a class="anchor" name="head"></a>
+                <h1 class="restaurant-name">{{ restaurant.name }} </h1>
+
+                {% if not order %}
+                <a href="{% url 'customer:check_in' restaurant.id %}" class="btn btn-sm btn-success">check-in</a>
+                {% endif %}
+
+                <p>{{ restaurant.address.street}} {{ restaurant.address.street_no}}, {{ restaurant.address.zip }}
+                    {{ restaurant.address.city }}, {{ restaurant.address.country.name }}</p>
+
+                <!-- list of categories -->
+                <ul class="category-list">
+                    {% for cat18n, data in categories %}
+                        <li>{%if not forloop.first%}|{%endif%} <a href="#c{{cat18n.category.id}}">{{cat18n.name}}</a></li>
+                    {% endfor%}
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="row">
+           {% for cat18n, itemdata in categories %}
+            <div class="category {{cat18n.category.view.name}}">
+                <a class="anchor" name="c{{cat18n.category.id}}"></a>
+                <h2 class="category-header">{{ cat18n.name }} <a href="#head"><span class="link-to-head glyphicon glyphicon-triangle-top"></span></a></h2>
+
+                <div class="category-items">
+                {% for i, i18n, allergens, traces in itemdata %}
+                    <div class="item">
+                        <div class="item-body">
+                            <div class="header">
+                                <div class="name">
+                                    <em>{% if menu.show_numbers%}{{ i.no }}. {% endif %}{{ i18n.name }}</em>
+                                </div>
+                                <div class="price">
+                                    {{ i.price }} {{ i.currency.abbr }}
+                                    {% if order%}
+                                        <a href="{% url 'customer:order_item' restaurant.id i.id %}" class="order btn-sm btn-success">order</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <img src="{{ i.image.url }}" class="img-responsive" onerror="imgError(this);"/>
+
+                            <div class="description">{{ i18n.description}}</div>
+
+                            <div class="allergens">
+                                {% language language.abbr %}
+                                {%if allergens%}
+                                    {% trans "Allergens" %}:
+                                {%endif%}
+
+                                {% for a18n, warn in allergens %}
+                                    <span class="allergen-icon {{warn|yesno:'warn,,'}}" data-toggle="tooltip"
+                                          data-original-title="{{a18n.name}}">{{a18n.allergen.no}}</span>
+                                        <span class="allergen {{warn|yesno:'warn,,'}}">{{ a18n.name }}{% if not forloop.last %}, {%else%}.{%endif%}</span>
+                                {% endfor %}
+
+                                {%if traces%}
+                                    <span class="traces">{% trans "May contain traces of" %}:</span>
+                                {%endif%}
+
+                                {% for a18n, warn in traces %}
+                                    <span class="allergen-traces-icon {{warn|yesno:'warn,,'}}" data-toggle="tooltip"
+                                          data-original-title="{{a18n.name}}">{{a18n.allergen.no}}</span>
+                                    <span class="allergen-traces {{warn|yesno:'warn,,'}}">{{ a18n.name }}{% if not forloop.last%},{%else%}.{%endif%}</span>
+                                {% endfor %}
+                                {% endlanguage %}
+                            </div>
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+{% endblock %}

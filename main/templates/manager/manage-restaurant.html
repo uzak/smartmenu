@@ -1,0 +1,19 @@
+{% extends 'manager/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Manage Restaurant {% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="POST">
+        {% csrf_token %}
+        <h1>Manage Restaurant: {{restaurant.name}}</h1>
+        {{ restaurant_form.as_p }}
+        {{ address_form.as_p }}
+        <button class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+{% endblock %}

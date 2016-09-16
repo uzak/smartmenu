@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Goodbye{% endblock %}                    
+
+{% block content %}
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        <p>Thank you for your payment. Please <a href="{% url 'customer:feedback' order.id %}">review</a> the food you ordered. See you soon at <b>{{ restaurant.name }}</b> and have a nice day.</p>
+    </div> 
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,10 @@
+*.pyc
+*.pyo
+*.un~
+*.sqlite3
+.idea/*.xml
+.idea/*.iml
+*.DS_Store
+main/migrations/
+images/
+locale/*/LC_MESSAGES/*.mo

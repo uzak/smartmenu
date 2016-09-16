@@ -1,0 +1,16 @@
+{% extends 'manager/base.html' %}
+
+
+{% block title %}SmartMenu / Manager / Delete Translation {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Delete menu translation: {{ language.name }}</h1>
+
+    This will delete the translation in {{ language.name }} for all categories and menu items. This cannot be undone! Are you sure to proceed?
+    <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-danger" name="_delete">delete</button>
+    </form>
+</div>
+{% endblock %}

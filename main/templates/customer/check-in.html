@@ -1,0 +1,42 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Check-in at {{restaurant.name}} {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        <h2>Check in at {{restaurant.name}}</h2>
+        Supported payment methods are:
+        <ul>
+        {% for m in restaurant.payment_method.all %}
+            <li>{{ m.name }}
+        {% endfor %}
+        </ul>
+        <p>Please show this to the waiter in the restaurant. He will check you in and enable ordering from your smartphone.</p>
+        <div class="col-sm-offset-3">
+                <img alt="qr code" src="/media/qr/{{request.user.id}}.png">
+        </div>
+        Alternatively you can just <a href="{% url 'customer:menu' restaurant.id %}">browse the menu card</a>
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<script>
+(function worker() {
+    $.ajax({
+        type: "GET",
+        url: "{% url 'customer:check_for_open_order' restaurant.id %}",
+        success: function(data, textStatus) {
+            if (data != "") {
+                window.location.href = "{% url 'customer:menu' restaurant.id %}";
+            }
+        },
+        complete: function() {
+            setTimeout(worker, 3000);
+        }
+    });
+})();
+</script>
+
+{% endblock %}

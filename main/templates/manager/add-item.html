@@ -1,0 +1,46 @@
+{% extends 'manager/base.html' %}
+
+
+{% block title %}SmartMenu / Manager / Add Item {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Add Item</h1>
+    <p>Language: <b>{{language}}</b>. You will be able to add translations after adding the item.</p>
+    <p>Currency: <b>{{currency}}</b></p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <h3>Allergens</h3>
+        <table border="1">
+            <tr>
+                <th>Full</th>
+                <th>Traces</th>
+                <th>No</th>
+                <th>Name</th>
+            </tr>
+            {% for ai, a18n in allergens %}
+            <tr>
+                <td>
+                    <input type="radio" name="allergen_{{a18n.allergen.id}}" value="full" {{ ai.traces|yesno:',checked,'}}>
+                </td>
+                <td>
+                    <input type="radio" name="allergen_{{a18n.allergen.id}}" value="traces" {{ ai.traces|yesno:'checked,,'}}>
+                </td>
+                <td>
+                    <input type="radio" name="allergen_{{a18n.allergen.id}}" value="none" {{ ai|yesno:',,checked'}}>
+                </td>
+                <td>{{a18n.name}}</td>
+            </tr>
+            {% endfor%}
+        </table>
+
+        <button class="btn btn-primary">Save</button>
+    </form>
+
+
+</div>
+{% endblock %}

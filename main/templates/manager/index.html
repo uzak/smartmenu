@@ -1,0 +1,41 @@
+{% extends 'manager/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Manager {% endblock %}
+
+{% block content %}
+<div class="container">
+    <p>
+    <h1 style="display: inline">{{restaurant.name}}</h1>
+    {% if show_change_restaurant %}
+    <a href="{% url 'manager:index' %}">change restaurant</a>
+    {% endif %}
+    </p>
+
+    <p>
+    <a href="{% url 'manager:manage_restaurant' restaurant.id %}" class="btn btn-primary">Manage Restaurant</a>
+        Change restaurant's name or address?
+    </p>
+
+    <p>
+    <a href="{% url 'manager:manage_menu' restaurant.menu.id %}" class="btn btn-primary">Manage Menu</a>
+    </p>
+
+    <p>
+        <a href="{% url 'manager:table_index' restaurant.id %}" class="btn btn-primary">Manage tables</a>
+    </p>
+
+    <p>
+    <a href="{% url 'manager:delete_restaurant' restaurant.id %}" class="btn btn-danger">Delete restaurant</a>
+        In case you want to remove restaurant from SmartMenu.
+    </p>
+
+    <p>Do you want to see the menu as your customer sees it?
+    <a href="{% url 'customer:menu' restaurant.id %}" target="_blank">Show menu in new window</a>
+    </p>
+
+</div>
+
+{% endblock %}

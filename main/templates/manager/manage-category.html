@@ -1,0 +1,123 @@
+{% extends 'manager/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Manage Category {% endblock %}
+
+{% block content %}
+<div class="container">
+
+    {% if cat18n.translated %}
+    <h1 class="inline">{{cat18n.name }}</h1>
+    {% else %}
+    <span class="no-translation">no translation</span> ({{cat18n.language.abbr}}: {{cat18n.name}})
+    {% endif %}
+
+    {% if cat18n.translated %}
+    <a href="#" data-toggle="modal" data-target="#myModal">rename</a>
+    <a href="{% url 'manager:delete_category' cat18n.category.id %}" class="text-danger">delete</a>
+    {% else %}
+    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#myModal">translate</a>
+    {% endif %}
+
+    {{ change_view_form.as_p}}
+
+    <h3>Translations:</h3>
+    <table class="table-languages">
+        {% for lang, current, cat18n in languages %}
+        <tr>
+            <td>{% if current %}<b>{{lang}}</b> {% else %} <a
+                    href="{% url 'manager:manage_category' cat.id %}?l={{lang.abbr}}">{{lang}}</a> {% endif%}
+            </td>
+            <td>{% if cat18n %}
+                {{cat18n.name}}
+                {% else %}
+                <span class="no-translation">missing translation</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <hr>
+
+    <h2>Items</h2>
+    {% if items %}
+    Use drag and drop to change oder. Click an item to rename, delete or manage it.
+    <ul id="id_items">
+        {% for i in items %}
+        <li data-id="{{ i.item.id }}"><a href="{% url 'manager:manage_item' i.item.id %}">{{ i.name }}</a>
+            {% endfor %}
+    </ul>
+    {% endif %}
+
+    <a href="{% url 'manager:add_item' cat.id %}" class="btn btn-primary">Add item</a>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form action="{% url 'manager:rename_category' cat.id %}" method="POST">
+            <div class="modal-content">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Rename category {{cat18n.name}}</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="name" class="form-control" value="{{cat18n.name}}">
+                    <input name="language" type="hidden" value="{{language.abbr}}">
+                </div>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-default" data-dismiss="modal">Close</a>
+                    <button class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // change view
+    $("#id_view").change(function() {
+        var value = $(this).val();
+        var url = "{% url 'manager:set_category_view' cat18n.category.id 0 %}";
+        url = url.slice(0, -1) + value;
+        $.get(url, function(res){
+            // pass
+        });
+    });
+
+
+    // item ordering
+    var el = document.getElementById("id_items");
+    var sortable = new Sortable(el, {
+        dataIdAttr: "data-id",
+        store: {
+              get: function(sortable) {
+                   var order = "{{ ordering }}";
+              },
+              set: function (sortable) {
+                  var order = sortable.toArray();
+                  $.ajax({
+                      method: "POST",
+                      url: "{% url 'manager:set_item_ordering' cat.id %}",
+                      data: {
+                          item_ordering: order.join("|"),
+                          csrfmiddlewaretoken: '{{ csrf_token }}',
+                      }
+                  });
+                }
+            },
+        });
+
+
+</script>
+{% endblock %}
+
+{% block bootstrap3_extra_head %}
+<script src="{% static 'js/Sortable.js' %}"></script>
+{% endblock %}

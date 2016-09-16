@@ -1,0 +1,18 @@
+{% extends 'manager/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Manager {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Please select a restaurant to manage</h1>
+    <ul>
+        {% for role in roles %}
+            <li><a href="{% url 'manager:for_restaurant' role.restaurant.id %}">{{ role.restaurant }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

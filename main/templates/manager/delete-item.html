@@ -1,0 +1,16 @@
+{% extends 'manager/base.html' %}
+
+
+{% block title %}SmartMenu / Manager / Delete Item {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Delete item: {{ item18n.name }}</h1>
+
+    This will delete the item "{{ item18n.name }}" and all its items. This cannot be undone! Are you sure to proceed?
+    <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-danger" name="_delete">delete</button>
+    </form>
+</div>
+{% endblock %}

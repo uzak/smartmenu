@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        <h2>Create a new user</h2>
+
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{userform.as_p}}
+            <input type="submit">
+        </form>
+    </div>
+</div>
+
+{% endblock %}

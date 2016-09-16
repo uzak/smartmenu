@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Waiter {% endblock %}                    
+
+{% block content %}
+<div class="container">
+    <h1>Please select a restaurant to wait</h1>
+    you are waiter in the following restaurants:
+    <ul>
+        {% for role in roles %}
+            <li><a href="{% url 'waiter:for_restaurant' role.restaurant.id %}">{{ role.restaurant }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

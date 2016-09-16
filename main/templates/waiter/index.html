@@ -1,0 +1,44 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block bootstrap3_extra_head %}
+    <meta http-equiv="refresh" content="10">
+{% endblock %}
+
+{% block title %}SmartMenu / Waiter {% endblock %}                    
+
+{% block content %}
+<div class="container">
+    <h1>{{ restaurant.name }}</h1>
+    <a class="btn btn-success" href="{% url 'waiter:read_qr' restaurant.id %}">Check-in customer</a>
+    <h2>Checked-in customers</h2>
+    <table class="table">
+        <tr>
+            <th>Table</th>
+            <th>Name</th>
+            <th>Checkin datetime</th>
+            <th>Amount</th>
+            <th>Checkout</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.table }}</td>
+            <td>{{ order.user }}</td>
+            <td>{{ order.checkin }}</td>
+            <td>{{ order.total }} {{ order.currency }}</td>
+            <td>
+                {% if order.checkout %}
+                    {{ order.checkout }}
+                {% else %}
+                    <a class="btn btn-success" href="{% url 'waiter:checkout' order.id %}">Checkout</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+{% endblock %}

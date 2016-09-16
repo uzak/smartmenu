@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block title %}SmartMenu / Waiter / Check-in {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Check-in a customer</h1>
+
+    <div id="status">Camera is N/A</div>
+
+    <div id="reader" style="width:300px;height:250px">
+    </div>
+</div>
+
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+<script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+<script>
+
+$('#reader').html5_qrcode(
+    function(data){
+        $('#status').html("");
+        window.location.href = "{% url 'waiter:choose_table' %}" + "?data="+data;
+    },
+    function(error){
+        //show read errors
+        $('#status').html(error);
+    }, function(videoError){
+        //the video stream could be opened
+        $('#status').html(videoError);
+    }
+);
+</script>
+{% endblock %}
